@@ -80,8 +80,9 @@ module.exports = function makeRouter() {
         res.render('users', { users: users});
       })
     } else {
-      User.find({})
-      res.render('users', { users: id});
+      Page.find({author: id},function(err,pages){
+        res.render('users', { users: pages});
+      })
     }
   });
 
