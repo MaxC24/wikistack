@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+
+{% block content %}
+  <h3>Authors</h3>
+  <hr>
+  <ul class="list-unstyled">
+    <!-- PLACEHOLDER LIST OF PAGES -->
+ 
+  {% if users.length > 0 %}
+  <ul>
+    {% for user in users %}
+      <li>{{ user.name }}</li>
+    {% endfor %}
+  </ul>
+{% else %}
+  There are no authors. Why don't you <a href='/wiki/add'>add one</a>?
+{% endif %}
+
+  </ul>
+{% endblock %}

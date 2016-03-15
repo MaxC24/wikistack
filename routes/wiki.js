@@ -46,9 +46,14 @@ module.exports = function makeRouter() {
       content: req.body.content,
       tags: req.body.tags.split(' ')
     })
-    page.save()
+    var name = req.body.name;
+    var email = req.body.email;
+    User.findOrCreate(name, email)
+    .then(function(user){
+      page.author = user._id;
+      return page.save();
+    })
     .then(function(newPage){
-      console.log(newPage.route);
       res.redirect(newPage.route);
     })
     .then(null, function(err){
@@ -68,47 +73,17 @@ module.exports = function makeRouter() {
     });
   });
 
-
-
-
-  // // a reusable function
-  // function respondWithAllTweets (req, res, next){
-  //   var allTheTweets = tweetBank.list();
-  //   res.render('index', {
-  //     title: 'Twitter.js',
-  //     tweets: allTheTweets,
-  //     showForm: true
-  //   });
-  // }
-
-
-  // // single-user page
-  // router.get('/users/:username', function(req, res, next){
-  //   var tweetsForName = tweetBank.find({ name: req.params.username });
-  //   res.render('index', {
-  //     title: 'Twitter.js',
-  //     tweets: tweetsForName,
-  //     showForm: true,
-  //     username: req.params.username
-  //   });
-  // });
-
-  // // single-tweet page
-  // router.get('/tweets/:id', function(req, res, next){
-  //   var tweetsWithThatId = tweetBank.find({ id: Number(req.params.id) });
-  //   res.render('index', {
-  //     title: 'Twitter.js',
-  //     tweets: tweetsWithThatId // an array of only one element ;-)
-  //   });
-  // });
-
-  // // create a new tweet
-  // router.post('/tweets', function(req, res, next){
-  //   var newTweet = tweetBank.add(req.body.name, req.body.text);
-  //   io.sockets.emit('new_tweet', newTweet);
-  //   res.redirect('/');
-  // });
-
+  router.get('/users/:id', function(req, res){
+    var id = req.params.id;
+    if(!id){
+      User.find({}, function(err, users){
+        res.render('users', { users: users});
+      })
+    } else {
+      User.find({})
+      res.render('users', { users: id});
+    }
+  });
 
   return router;
 }

@@ -1,6 +1,6 @@
 var mongoose = require('mongoose');
 // Notice the `mongodb` protocol; Mongo is basically a kind of server,
-// which handles database requests and sends responses. It's async!
+// which handles userbase requests and sends responses. It's async!
 mongoose.connect('mongodb://localhost/wikistack'); // <= db name will be 'wikistack'
 var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'mongodb connection error:'));
@@ -40,8 +40,21 @@ pageSchema.pre('validate',function(next){
   next();
 });
 
+userSchema.statics.findOrCreate = function (name, email) {
+  var self = this
+  return self.findOne({email: email}).exec().then(function(user){
+    if(user) {return user;}
+    else {
+      return self.create({
+        name: name,
+        email: email
+      })
+    }
+  });
+}
+
 var Page = mongoose.model('Page', pageSchema);
-var User = mongoose.model('User', userSchema);
+var User = mongoose.model('User', userSchema)
 
 
 module.exports = {
